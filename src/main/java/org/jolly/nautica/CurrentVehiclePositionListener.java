@@ -25,8 +25,9 @@ public class CurrentVehiclePositionListener implements VehiclePositionListener {
     @Transactional
     @Override
     public void onFeedMessage(GtfsRealtime.FeedMessage feedMessage) {
+        log.info("running");
         int batchSize = 80;
-        List<List<GtfsRealtime.FeedEntity>> entityBatches = getBatches(feedMessage.getEntityList(), batchSize);
+        List<List<GtfsRealtime.FeedEntity>> entityBatches = CollectionUtils.getBatches(feedMessage.getEntityList(), batchSize);
         LocalDateTime now = LocalDateTime.now();
 
         for (List<GtfsRealtime.FeedEntity> batch : entityBatches) {
@@ -58,11 +59,5 @@ public class CurrentVehiclePositionListener implements VehiclePositionListener {
                 """,
                 params.toArray(new MapSqlParameterSource[0]));
         }
-    }
-
-    private static <T> List<List<T>> getBatches(List<T> collection, int batchSize) {
-        return IntStream.iterate(0, i -> i < collection.size(), i -> i + batchSize)
-                .mapToObj(i -> collection.subList(i, Math.min(i + batchSize, collection.size())))
-                .collect(Collectors.toList());
     }
 }

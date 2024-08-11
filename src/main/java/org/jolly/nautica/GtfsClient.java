@@ -28,12 +28,13 @@ public class GtfsClient {
     private final List<VehiclePositionListener> listeners;
 
     public void run() {
+        log.info("running");
         URI uri = UriComponentsBuilder.fromUriString("https://api.data.gov.my/gtfs-realtime/vehicle-position/{agency}")
                 .queryParam("category", "rapid-bus-mrtfeeder")
                 .buildAndExpand("prasarana")
                 .toUri();
 
-        log.info("there: {}", uri);
+//        log.info("there: {}", uri);
         webClient.get()
                 .uri(uri)
 //                .accept(MediaType.APPLICATION_OCTET_STREAM)
@@ -42,7 +43,7 @@ public class GtfsClient {
                 .onStatus(HttpStatusCode::isError, response -> response.createException().flatMap(Mono::error))
                 .toEntity(ByteBuffer.class)
                 .subscribe(res -> {
-                    log.info("headers: {}", res.getHeaders());
+//                    log.info("headers: {}", res.getHeaders());
 
                     List<CompletableFuture<Void>> cfs = listeners.stream()
                                     .map(listener -> CompletableFuture.runAsync(() -> {

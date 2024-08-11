@@ -43,26 +43,6 @@ class HistoricalVehiclePositionListenerTest {
                     .build());
         }
         GtfsRealtime.FeedMessage message = GtfsRealtime.FeedMessage.newBuilder()
-//                .addEntity(GtfsRealtime.FeedEntity.newBuilder()
-//                        .setId("0")
-//                        .setVehicle(GtfsRealtime.VehiclePosition.newBuilder()
-//                                .setTrip(GtfsRealtime.TripDescriptor.newBuilder()
-//                                        .setTripId("240731020095S13")
-//                                        .setRouteId("T567")
-//                                        .build())
-//                                .setPosition(GtfsRealtime.Position.newBuilder()
-//                                        .setLatitude(3.009742F)
-//                                        .setLongitude(101.72199F)
-//                                        .setBearing(153.0F)
-//                                        .setSpeed(0.0F)
-//                                        .build())
-//                                .setTimestamp(1723372910L)
-//                                .setVehicle(GtfsRealtime.VehicleDescriptor.newBuilder()
-//                                        .setId("VH3593")
-//                                        .setLicensePlate("VH3593")
-//                                        .build())
-//                                .build())
-//                        .build())
                 .addAllEntity(entities)
                 .buildPartial();
 

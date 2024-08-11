@@ -27,8 +27,9 @@ public class HistoricalVehiclePositionListener implements VehiclePositionListene
     @Transactional
     @Override
     public void onFeedMessage(GtfsRealtime.FeedMessage feedMessage) {
+        log.info("running");
         int batchSize = 80;
-        List<List<GtfsRealtime.FeedEntity>> entityBatches = getBatches(feedMessage.getEntityList(), batchSize);
+        List<List<GtfsRealtime.FeedEntity>> entityBatches = CollectionUtils.getBatches(feedMessage.getEntityList(), batchSize);
         LocalDateTime createdOn = LocalDateTime.now();
 
         for (List<GtfsRealtime.FeedEntity> batch : entityBatches) {
@@ -58,16 +59,10 @@ public class HistoricalVehiclePositionListener implements VehiclePositionListene
     }
 
     private long[] getNextSequenceBatch(int batchSize) {
-        Long firstSeq = jdbcTemplate.queryForObject("SELECT nextval('hist_vehicle_positions_seq')", Collections.emptyMap(), Long.class);
+        Long firstSeq = jdbcTemplate.queryForObject("select nextval('hist_vehicle_positions_seq')", Collections.emptyMap(), Long.class);
         if (firstSeq == null)
-            throw new RuntimeException();
+            throw new RuntimeException(); // shouldn't reach here
 
         return LongStream.range(firstSeq, firstSeq + batchSize).toArray();
-    }
-
-    private static <T> List<List<T>> getBatches(List<T> collection, int batchSize) {
-        return IntStream.iterate(0, i -> i < collection.size(), i -> i + batchSize)
-                .mapToObj(i -> collection.subList(i, Math.min(i + batchSize, collection.size())))
-                .collect(Collectors.toList());
     }
 }
