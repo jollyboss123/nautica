@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:alpine
+    command:
+      - postgres
+      # - -cshared_buffers=512MB  # Default = 128M
+      # - -cwork_mem=16MB  # Default = 4M ; total = this*worker(8)*parallel(2)?
+      # - -ctemp_buffers=32MB  # Default = 8M
+      - -clog_temp_files=0  # Log all temporary files creation
+      # - -clog_min_duration_statement=60s  # Log queries longer than this delay
+    # Ignored in swarm (https://github.com/moby/moby/issues/26714):
+    # shm_size: 512M  # Defaults to 64M ; related to total work_mem?
+    # Unsupported in swarm:
+    # tmpfs:
+    #   - /dev/shm:size=512M
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - type: tmpfs
+        target: /var/lib/postgresql/data/base/pgsql_tmp
+        tmpfs:
+          # 1G max - https://www.kernel.org/doc/html/latest/filesystems/tmpfs.html
+          size: 1073741824
+      # Workaround for ignored shm_size in swarm:
+      # - type: tmpfs
+      #   target: /dev/shm
+      #   tmpfs:
+      #     size: 536870912  # 512M max ; defaults to 64M ; relative to total work_mem?
+      # turn off durability options for speed? https://stackoverflow.com/questions/52277899/docker-tmpfs-seems-to-have-no-effect-on-postgresql
